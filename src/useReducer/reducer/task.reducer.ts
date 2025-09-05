@@ -1,5 +1,5 @@
 import React from "react";
-
+import * as z from "zod";
 interface Todo {
   id: number;
   text: string;
@@ -18,6 +18,19 @@ type TaskAction =
   | { type: "TOGGLE_TODO"; payload: number }
   | { type: "DELETE_TODO"; payload: number };
 
+const TodoSchema = z.object({
+  id: z.number(),
+  text: z.string(),
+  completed: z.boolean(),
+});
+
+const TaskStateSchema = z.object({
+  todos: z.array(TodoSchema),
+  length: z.number(),
+  completed: z.number(),
+  pending: z.number(),
+});
+
 export const getTasksInitialState = (): TaskState => {
   const savedState = localStorage.getItem("tasks-state");
 
@@ -30,7 +43,18 @@ export const getTasksInitialState = (): TaskState => {
     };
   }
 
-  return JSON.parse(savedState);
+  const parsedState = TaskStateSchema.safeParse(JSON.parse(savedState));
+
+  if (parsedState.error) {
+    return {
+      todos: [],
+      completed: 0,
+      pending: 0,
+      length: 0,
+    };
+  }
+
+  return parsedState.data;
 };
 
 export const taskReducer: React.Reducer<TaskState, TaskAction> = (
