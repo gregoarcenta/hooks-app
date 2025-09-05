@@ -19,12 +19,18 @@ type TaskAction =
   | { type: "DELETE_TODO"; payload: number };
 
 export const getTasksInitialState = (): TaskState => {
-  return {
-    todos: [],
-    completed: 0,
-    pending: 0,
-    length: 0,
-  };
+  const savedState = localStorage.getItem("tasks-state");
+
+  if (!savedState) {
+    return {
+      todos: [],
+      completed: 0,
+      pending: 0,
+      length: 0,
+    };
+  }
+
+  return JSON.parse(savedState);
 };
 
 export const taskReducer: React.Reducer<TaskState, TaskAction> = (
