@@ -1,8 +1,9 @@
-import { StrictMode } from "react";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { InstagromApp } from "@/useOptimistic/InstagromApp.tsx";
 import { Toaster } from "sonner";
+import ClientInformation from "@/use-suspense/ClientInformation.tsx";
+import { getUserAction } from "@/use-suspense/actions/get-user.action.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -17,6 +18,15 @@ createRoot(document.getElementById("root")!).render(
     {/*<ScrambleWords />*/}
     {/*<MemoHook />*/}
     {/*<MemoCounter />*/}
-    <InstagromApp />
+    {/*<InstagromApp />*/}
+    <Suspense
+      fallback={
+        <div className={"bg-gradient"}>
+          <h1 className={"text-2xl"}>Cargando...</h1>
+        </div>
+      }
+    >
+      <ClientInformation getUser={getUserAction(123)} />
+    </Suspense>
   </StrictMode>,
 );
